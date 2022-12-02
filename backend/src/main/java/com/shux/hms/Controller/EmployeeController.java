@@ -36,7 +36,7 @@ public class EmployeeController {
            int count  = this.employeeDAO.getEmployeeListbyDept(emp.getEmpDepartment());
            System.out.println("count"+count);
            System.out.println("count"+emp.getEmpDepartment().getCapacity());
-           if(count >= emp.getEmpDepartment().getCapacity() - 1 ){
+           if(count >= emp.getEmpDepartment().getCapacity()){
 
                Result result = new Result(208,"\"" + "Department Full" + "\"" );
                return Response.status(208).entity(result.toString()).build();
@@ -63,7 +63,7 @@ public class EmployeeController {
             else{
 
                 Result result = new Result(204,"\"" + "Unsuccessful" + "\"" );
-                return Response.status(200).entity(result.toString()).build();
+                return Response.status(204).entity(result.toString()).build();
             }
         }
         catch(JDBCException ex) {
@@ -81,6 +81,17 @@ public class EmployeeController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEmployees(Employee emp) {
 //        System.out.println(emp.toString());
+        if(emp.getEmpDepartment() !=null){
+            int count  = this.employeeDAO.getEmployeeListbyDept(emp.getEmpDepartment());
+            System.out.println("count"+count);
+            System.out.println("count"+emp.getEmpDepartment().getCapacity());
+            if(count >= emp.getEmpDepartment().getCapacity()){
+
+                Result result = new Result(208,"\"" + "Department Full" + "\"" );
+                return Response.status(208).entity(result.toString()).build();
+            }
+        }
+
         System.out.println("image : " + emp.getImageData());
         if(emp.getImageData() != null ) {
             try {
@@ -102,7 +113,7 @@ public class EmployeeController {
             else{
 
                 Result result = new Result(204,"\"" + "Unsuccessful" + "\"" );
-                return Response.status(200).entity(result.toString()).build();
+                return Response.status(204).entity(result.toString()).build();
             }
         }
         catch(JDBCException ex) {

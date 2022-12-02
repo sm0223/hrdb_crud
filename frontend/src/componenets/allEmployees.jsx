@@ -4,13 +4,19 @@ import {Spinner} from "react-bootstrap";
 export function AllEmployees(props) {
   const employeeListResponse = props.employees;
   //Returning null if employee List is null
-  if(employeeListResponse == null || employeeListResponse.data ==null) return (<Spinner show={true}/>)
+  if(employeeListResponse == null || employeeListResponse.data ==null) return (
+      <div className="container" style={{padding:100}}>
+        <div className="text-center">
+          <div className="spinner-border text-primary text-center" style={{height:200, width:200}}> </div>
+        </div>
+      </div>
+  )
   const employeeList = employeeListResponse.data;
 
   return (
       <div className="container">
         <h3 className="my-5">Employees</h3>
-        <table className="table shadow">
+        <table className="table table-responsive shadow">
           <thead className="table table-dark shadow ">
           <tr>
             <th scope="col"><p className="m-2 text-center">#</p></th>
@@ -36,12 +42,12 @@ export function AllEmployees(props) {
                   <td> {employeedata.email}</td>
                   <td> {employeedata.title}</td>
                   <td> {employeedata.photographPath}</td>
-                  <td>
-                    <button className="btn btn-success m-2"
+                  <td >
+                    <p><button className="btn btn-success m-2"
                             id={"view"+employeedata.id}
                             key={"view"+employeedata.id}
                             onClick={()=>props.handleAction(employeedata,"view")}>
-                      View
+                      &nbsp;&nbsp;View&nbsp;&nbsp;
                     </button>
 
                     <button className="btn btn-warning m-2"
@@ -59,6 +65,7 @@ export function AllEmployees(props) {
                             >
                       Delete
                     </button>
+                    </p>
                   </td>
                 </tr>
               )

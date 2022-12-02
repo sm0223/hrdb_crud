@@ -9,7 +9,13 @@ const ViewEmp = ({employee, handleAction})=> {
 
 
   //Returning null ig department List is null
-  if(employee == null) return (<div> Fetching Department  </div>)
+  if(employee == null) return (
+      <div className="container" style={{padding:100}}>
+        <div className="text-center">
+          <div className="spinner-border text-primary text-center" style={{height:200, width:200}}> </div>
+        </div>
+      </div>
+  )
   console.log("d",employee.data);
   return (
       <div className="container">
@@ -31,7 +37,7 @@ const ViewEmp = ({employee, handleAction})=> {
                 {
                   employee != null && employee.imageData!=null ?
                     <img align="right" className="photo border rounded float-right" src={employee.imageData}/> :
-                    <img align="right" className="photo border rounded float-right" src={require("/home/shux/EsdProjects/hrms2/src/assets/no.png")}/>
+                    <img align="right" className="photo border rounded float-right" src={require("/home/shux/EsdProjects/frontend/src/assets/no.png")}/>
                 }
               </div>
             </div>

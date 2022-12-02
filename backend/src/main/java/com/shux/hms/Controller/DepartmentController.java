@@ -27,7 +27,7 @@ public class DepartmentController {
     public Response addDepartment(Department dept) {
         try {
             if (this.deptDAO.addDepartment(dept) == true) {
-                Result result = new Result(200,"Success");
+                Result result = new Result( 200,"Success");
                 return Response.status(200).entity(result.toString()).build();
             }
             else{

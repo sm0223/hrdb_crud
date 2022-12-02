@@ -4,18 +4,27 @@ import employeeService from "../services/employee"
 
 import {ConstraintViolation} from "./constraintViolation";
 import departmentService from "../services/department";
+import Example from "./modal";
 const Updateform = (props)=> {
 
   const [selectedOption, setSelectedOption] = useState(1);
-  const [emailViolation, setEmailViolation] = useState(false);
   const [dataUri, setDataUri] = useState(props.employee &&props.employee.imageData)
-
+  const [spinner, setSpinner] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [happy, setHappy] = useState("text-danger");
 
   const departmentList = props.departments;
   const employee = props.employee;
 
   //Returning null ig department List is null
-  if(departmentList == null || departmentList.data ==null || employee ==null) return (<div> Fetching Department  </div>)
+  if(departmentList == null || departmentList.data ==null || employee ==null) return (
+      <div className="container" style={{padding:100}}>
+        <div className="text-center">
+          <div className="spinner-border text-primary text-center" style={{height:200, width:200}}> </div>
+        </div>
+      </div>
+  )
 
   //Creating Department List for easy
   let options = [];
@@ -44,6 +53,10 @@ const Updateform = (props)=> {
 
   }
 
+  const handleClose = () => {
+    console.log("ads")
+    setShowModal(false);
+  }
 
   const saveEmployee= async (event) => {
     event.preventDefault();
@@ -61,17 +74,25 @@ const Updateform = (props)=> {
 
     console.log("emplouee", newEmployee);
     employeeService.updateEmployee(newEmployee).then(res =>{
+      setSpinner(false);
       if (res.status == 200) {
-        alert('Successful');
-      } else if (res.status == 204) {
-        alert('UnSuccessful');
+        setMessage('Successful! : ' +"Employee Added!");
+        setHappy("text-success")
+        setShowModal(true)
+      } else if (res.status == 208) {
+        if (res.data.resCode == 208) {
+          console.log("department Full");
+          setMessage('Unsuccessful 422 : ' + "Department has reached capacity!");
+          setHappy("text-danger")
+          setShowModal(true)
+
+        }
       }
       else if (res.status == 422) {
         if (res.data.data.includes(newEmployee.email)) {
-          setEmailViolation(true);
-          console.log("ema", emailViolation);
-          alert('Unsuccessful 422 : ' + "Email is already registered with an existing Employee!");
-
+          setMessage('Unsuccessful 422 : ' + "Email is already registered with an existing Employee!");
+          setHappy("text-danger")
+          setShowModal(true)
         }
       }
     });
@@ -79,6 +100,8 @@ const Updateform = (props)=> {
 
   return (
       <div className="container">
+        { showModal && <Example message = {message} showModal = {showModal} handleClose={handleClose} happy = {happy}/>}
+
         <h3 align="left">Update Employee</h3>
         {/*<Example />*/}
         <form onSubmit={saveEmployee}>
@@ -97,10 +120,7 @@ const Updateform = (props)=> {
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email address</label>
             <input type="text" className="form-control" id="email" defaultValue={employee.email} required/>
-            <ConstraintViolation
-                violation={emailViolation}
-                violationMessage = 'Email has been already registered with an existing Employee!'
-            />
+
           </div>
           <div className="mb-3">
             <label htmlFor="title" className="form-label">Title</label>
@@ -118,7 +138,18 @@ const Updateform = (props)=> {
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <button type="submit" className="btn btn-primary" style={{verticalAlign:"middle"}}>
+            { spinner!==true &&<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</> }
+            { spinner===true && <div className="d-flex" >
+              <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit &nbsp;</>
+
+              <span className="spinner-border spinner-border-sm text-primary" role="status">
+                                  </span>
+            </div>
+            }
+          </button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button className="btn btn-warning" onClick={()=>props.handleAction(employee, "allEmp")}>Back</button>
         </form>
       </div>
   )

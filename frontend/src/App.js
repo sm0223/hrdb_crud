@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 
 
+
 import BasicNavbar from "./componenets/nav";
 import Empform from "./componenets/empform";
 
@@ -14,6 +15,7 @@ import employeeService from "./services/employee";
 import {Dashbord} from "./componenets/dashbord";
 import departmentService from "./services/department";
 import ViewEmp from "./componenets/viewEmp";
+import Example from "./componenets/modal";
 
 
 function App() {
@@ -22,11 +24,13 @@ function App() {
     empForm : false,
     allEmp : false,
     updateEmp :false,
-    viewEmp : false
+    viewEmp : false,
+    showModal : false
   });
   const [departmentList, setDepartmentList] = useState(null);
   const [employeeList, setEmployeeList] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const getAllDepartmentsHook = () => {
 
@@ -61,7 +65,8 @@ function App() {
         empForm : true,
         allEmp : false,
         updateEmp :false,
-        viewEmp : false
+        viewEmp : false,
+        showModal : false
       })
     }
     else if(action == 'view') {
@@ -70,7 +75,8 @@ function App() {
         empForm : false,
         allEmp : false,
         updateEmp :false,
-        viewEmp : true
+        viewEmp : true,
+        showModal : false
       })
     }
     else if(action == 'allEmp') {
@@ -79,7 +85,8 @@ function App() {
         empForm : false,
         allEmp : true,
         updateEmp :false,
-        viewEmp : false
+        viewEmp : false,
+        showModal : false
       })
     }
     else if(action == 'dashboard') {
@@ -88,7 +95,8 @@ function App() {
         empForm : false,
         allEmp : false,
         updateEmp :false,
-        viewEmp : false
+        viewEmp : false,
+        showModal : false
       })
     }
     else if(action == 'update'){
@@ -97,7 +105,8 @@ function App() {
         empForm : false,
         allEmp : false,
         updateEmp :true,
-        viewEmp : false
+        viewEmp : false,
+        showModal : false,
       })
     }
   }
@@ -110,6 +119,7 @@ function App() {
       <BasicNavbar
           handleDashboard={handleDashboard}
       />
+      {showComponent.showModal === true && <Example message = {message} />}
 
       {showComponent.dashboard == true && <Dashbord
         handleDashboard={handleDashboard}
@@ -127,6 +137,8 @@ function App() {
       {showComponent.updateEmp == true && <Updateform
           departments = {departmentList}
           employee = {selectedEmployee}
+          handleAction={handleAction}
+
       />}
 
       {showComponent.viewEmp == true && <ViewEmp

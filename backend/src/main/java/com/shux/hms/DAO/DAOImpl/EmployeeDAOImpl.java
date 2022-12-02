@@ -116,6 +116,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     public List<Employee> getEmployeeList(){
         try (Session session = HibernateSessionUtil.getSession()){
             List<Employee> empList = new ArrayList<>();
+
             for (final Object d : session.createQuery("from Employee ", Employee.class).list()) {
                 empList.add((Employee) d);
             }

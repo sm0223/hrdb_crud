@@ -4,14 +4,16 @@ import Select from 'react-select';
 import employeeService from "../services/employee"
 
 import {ConstraintViolation} from "./constraintViolation";
-import Example from "./modal";
-import {Spinners} from "./spinners";
+import Example from "./modal";;
 const Empform = (props)=> {
 
   const [selectedOption, setSelectedOption] = useState(1);
-  const [emailViolation, setEmailViolation] = useState(false);
   const [dataUri, setDataUri] = useState('')
   const [spinner, setSpinner] = useState(false);
+
+  const [message, setMessage] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [happy, setHappy] = useState("text-danger");
 
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -32,11 +34,21 @@ const Empform = (props)=> {
         })
 
   }
-
+  //modal handling
+  const handleClose = () => {
+    console.log("ads")
+    setShowModal(false);
+  }
 
   const departmentList = props.departments;
-  //Returning null ig department List is null
-  if(departmentList == null || departmentList.data ==null) return (<div> Fetching Department  </div>)
+  if(departmentList == null || departmentList.data ==null) return (
+      <div className="container" style={{padding:100}}>
+        <div className="text-center">
+          <div className="spinner-border text-primary text-center" style={{height:200, width:200}}> </div>
+        </div>
+      </div>
+  )   //Returning null ig department List is null
+
 
   //Creating Department List for easy
   let options = [];
@@ -48,7 +60,9 @@ const Empform = (props)=> {
   const saveEmployee= (event) => {
     event.preventDefault()
     setSpinner(true);
+
     const dept = departmentList.data.filter(dept => dept.dept_id === selectedOption.value);
+
     const newEmployee = {
       "firstname": event.target[0].value,
       "lastname": event.target[1].value,
@@ -62,19 +76,28 @@ const Empform = (props)=> {
     employeeService.addEmployee(newEmployee).then(res =>{
       setSpinner(false);
       if (res.status == 200) {
-        alert('Successful');
+        setMessage('Successful! : ' +"Employee Added!");
+        setHappy("text-success")
+        setShowModal(true)
+        event.target[0].value = ""
+        event.target[1].value = ""
+        event.target[2].value = ""
+        event.target[3].value = ""
+        event.target[4].value = ""
       } else if (res.status == 208) {
         if (res.data.resCode == 208) {
           console.log("department Full");
-          alert('Unsuccessful 422 : ' + "Department Full!");
+          setMessage('Unsuccessful 422 : ' + "Department has reached capacity!");
+          setHappy("text-danger")
+          setShowModal(true)
+
         }
       }
       else if (res.status == 422) {
         if (res.data.data.includes(newEmployee.email)) {
-          setEmailViolation(true);
-          console.log("ema", emailViolation);
-          alert('Unsuccessful 422 : ' + "Email is already registered with an existing Employee!");
-
+          setMessage('Unsuccessful 422 : ' + "Email is already registered with an existing Employee!");
+          setHappy("text-danger")
+          setShowModal(true)
         }
       }
     }
@@ -82,6 +105,7 @@ const Empform = (props)=> {
   }
   return (
       <div className="container">
+        { showModal && <Example message = {message} showModal = {showModal} handleClose={handleClose} happy = {happy}/>}
       <h3 className="my-5" align="left">Register Employee</h3>
       <form onSubmit={saveEmployee}>
         <div className="mb-3">
@@ -100,11 +124,7 @@ const Empform = (props)=> {
         </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email address</label>
-          <input type="text" className="form-control" id="email" placeholder="Enter Email" required/>
-          <ConstraintViolation
-              violation={emailViolation}
-              violationMessage = 'Email has been already registered with an existing Employee!'
-          />
+          <input type="email" className="form-control" id="email" placeholder="Enter Email" required/>
         </div>
         <div className="mb-3">
           <label htmlFor="title" className="form-label">Title</label>
@@ -121,9 +141,15 @@ const Empform = (props)=> {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary">
-          { spinner!==true &&<p>Submit</p> }
-          { spinner===true &&<p>Submit<Spinners show = {true}/></p> }
+        <button type="submit" className="btn btn-primary" style={{verticalAlign:"middle"}}>
+          { spinner!==true &&<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</> }
+            { spinner===true && <div className="d-flex" >
+                                  <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit &nbsp;</>
+
+                                  <span className="spinner-border spinner-border-sm text-primary" role="status">
+                                  </span>
+                                </div>
+            }
         </button>
       </form>
       </div>

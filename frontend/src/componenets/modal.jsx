@@ -2,20 +2,17 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-function Example({show, handleClose}) {
+function Example({message, showModal, handleClose, happy}) {
   return (
       <>
-        <Modal show={show} onHide={()=>handleClose}>
+        <Modal show={true}>
           <Modal.Header closeButton>
-            <Modal.Title>Success</Modal.Title>
+            <Modal.Title>Message</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Data Inserted Successfully</Modal.Body>
+          <Modal.Body>{<p className={happy}>{message}</p>}</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={()=>handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               Close
-            </Button>
-            <Button variant="primary" onClick={()=>handleClose}>
-              Save Changes
             </Button>
           </Modal.Footer>
         </Modal>
